@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Arweave from "arweave";
 
-const FileUploader = () => {
+export function FileUploader()  {
 	const [file, setFile] = useState<Blob>();
 	const [walletAddress, setWalletAddress] = useState<string | null>(null);
 	const arweave = new Arweave({
@@ -112,4 +112,3 @@ const FileUploader = () => {
 	);
 };
 
-export default FileUploader;
