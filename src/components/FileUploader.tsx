@@ -1,136 +1,97 @@
-import React, { useEffect, useState } from "react";
-import Arweave from "arweave";
+import React, { useEffect, useState } from 'react';
+import Arweave from 'arweave';
 
-function TextInput({
-	                   label,
-	                   type = "text",
-	                   ...props
-                   }: React.ComponentPropsWithoutRef<'input'> & { label: string, type?: string }) {
-	let id = React.useId();
-
-	return (
-		<div className="group relative z-0 transition-all focus-within:z-10 my-4">
-			<input
-				type={type}
-				id={id}
-				{...props}
-				placeholder=" "
-				className="peer block w-full border border-neutral-300 bg-transparent px-6 pb-4 pt-12 text-base/6 text-neutral-950 ring-4 ring-transparent transition focus:border-neutral-950 focus:outline-none focus:ring-neutral-950/5 group-first:rounded-t-2xl group-last:rounded-b-2xl"
-			/>
-			<label
-				htmlFor={id}
-				className="pointer-events-none absolute left-6 top-1/2 -mt-3 origin-left text-base/6 text-neutral-500 transition-all duration-200 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:font-semibold peer-focus:text-neutral-950 peer-placeholder-shown:-translate-y-4 peer-placeholder-shown:scale-75 peer-placeholder-shown:font-semibold peer-placeholder-shown:text-neutral-950"
-			>
-				{label}
-			</label>
-		</div>
-	);
-}
-
-export function FileUploader() {
-	const [file, setFile] = useState<Blob>();
+export const FileUploader: React.FC = () => {
+	const [file, setFile] = useState<File | null>(null);
 	const [walletAddress, setWalletAddress] = useState<string | null>(null);
 	const arweave = new Arweave({
-		host: "ar-io.net",
+		host: 'ar-io.net',
 		port: 443,
-		protocol: "https"
+		protocol: 'https',
 	});
 
 	useEffect(() => {
-		window.arweaveWallet
-			.connect(["ACCESS_ADDRESS", 'DISPATCH', 'SIGN_TRANSACTION', 'ENCRYPT'])
-			.then(() => {
-				arweave?.wallets
-					.getAddress("use_wallet") // Use the first wallet from ArConnect
-					.then((address: string) => {
-						setWalletAddress(address);
-						console.log("Loaded AR address : ", address)
-					})
-			})
+		const connectWallet = async () => {
+			await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'DISPATCH', 'SIGN_TRANSACTION', 'ENCRYPT']);
+			const address = await arweave.wallets.getAddress('use_wallet');
+			setWalletAddress(address);
+			console.log('Loaded AR address:', address);
+		};
+
+		if (!walletAddress) {
+			connectWallet().catch(console.error);
+		}
 	}, [walletAddress]);
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		let file = event.target.files?.[0];
-		if (file) {
-			console.log("selected file " + file.name + " size " + file.size);
-			setFile(file);
+		const selectedFile = event.target.files?.[0] ?? null;
+		setFile(selectedFile);
+		if (selectedFile) {
+			console.log(`Selected file: ${selectedFile.name}, size: ${selectedFile.size}`);
 		}
 	};
 
-	const encrypt = async (arrayBuffer: string | ArrayBuffer) => {
-		let decodedString = ""
-		if (arrayBuffer instanceof ArrayBuffer) {
-			const decoder = new TextDecoder('utf-8');
-			decodedString = decoder.decode(new Uint8Array(arrayBuffer));
-		} else {
-			decodedString = arrayBuffer;
-		}
-
-		const encryptedData = await window.arweaveWallet.encrypt(
-			decodedString,
-			{ algorithm: "RSA-OAEP", hash: "SHA-256" }
-		);
-		return encryptedData;
-	}
-
 	const uploadFile = async () => {
+		if (!file || !walletAddress) return;
+
 		try {
-			if (file && walletAddress) {
-				const reader = new FileReader();
-				reader.onload = async (e) => {
-					const arrayBuffer = e.target?.result;
-					if (arrayBuffer) {
-						const encryptedData = await encrypt(arrayBuffer);
+			const reader = new FileReader();
+			reader.onloadend = async (event) => {
+				const arrayBuffer = event.target?.result;
+				if (arrayBuffer) {
+					const transaction = await arweave.createTransaction({
+						data: arrayBuffer,
+					});
+					await arweave.transactions.sign(transaction);
+					const response = await arweave.transactions.post(transaction);
 
-						const transaction = await arweave.createTransaction(
-							{ data: encryptedData },
-							undefined // No need to specify a key as ArConnect handles it
-						);
-						await arweave.transactions.sign(transaction);
-						const uploader = await arweave.transactions.getUploader(transaction);
-
-						while (!uploader.isComplete) {
-							await uploader.uploadChunk();
-						}
-
-						const response = await arweave.transactions.post(transaction);
-
-						if (response.status === 200) {
-							console.log("File uploaded successfully!", response);
-						} else {
-							console.error("File upload failed : " + response.statusText);
-						}
+					if (response.status === 200) {
+						console.log('File uploaded successfully!', response);
+					} else {
+						console.error('File upload failed:', response.statusText);
 					}
-				};
-				reader.readAsArrayBuffer(file);
-			}
+				}
+			};
+			reader.readAsArrayBuffer(file);
 		} catch (error) {
-			console.error("Error uploading file: ", error);
+			console.error('Error uploading file:', error);
 		}
 	};
 
 	return (
-		<div className="isolate mt-6 -space-y-px rounded-2xl bg-white/50 p-6">
-			{walletAddress === null ? (
+		<div className="flex items-center justify-center p-12">
+			<div className="max-w-md w-full space-y-8">
 				<div className="text-center">
-					<p className="text-base/6 text-neutral-500">
-						Please install ArConnect and open your wallet.
-					</p>
-				</div>
-			) : (
-				<>
-					<h2 className="font-display text-base font-semibold text-neutral-950">
-						Upload your files
-					</h2>
-					<TextInput label="Select File" type="file" onChange={handleFileChange} />
-					<button
-						onClick={uploadFile}
-						className="mt-4 px-8 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-300"
+					<svg
+						className="mx-auto h-12 w-12 text-gray-400"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+						aria-hidden="true"
 					>
-						Upload
-					</button>
-				</>
-			)}
+						<path
+							vectorEffect="non-scaling-stroke"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth={2}
+							d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+						/>
+					</svg>
+					<h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Upload your files</h2>
+				</div>
+				<input
+					type="file"
+					onChange={handleFileChange}
+					className="cursor-pointer block w-full text-sm text-gray-900 bg-white border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+				/>
+				<button
+					onClick={uploadFile}
+					className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+				>
+					Upload
+				</button>
+			</div>
 		</div>
 	);
-}
+};
+
