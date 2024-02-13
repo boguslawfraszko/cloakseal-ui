@@ -1,6 +1,5 @@
 'use client'
 
-import {PageIntro} from '@/components/PageIntro'
 import {FileUploader} from '@/components/FileUploader'
 import {FadeIn} from '@/components/FadeIn';
 import {Container} from '@/components/Container';
