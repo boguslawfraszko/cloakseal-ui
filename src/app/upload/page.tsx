@@ -7,8 +7,9 @@ import { FadeIn } from '@/components/FadeIn';
 import { FileUploader } from '@/components/FileUploader';
 // Assuming Dialog is a component you have or from a UI library you're using
 import {Dialog} from '@/components/Dialog';
+import {Button} from '@/components/Button';
 
-export default function Contact() {
+export default function UploadPage() {
     // State to manage dialog visibility
     const [isUploaderOpen, setIsUploaderOpen] = useState(false);
 
@@ -22,7 +23,7 @@ export default function Contact() {
         <>
             <Container className="flex flex-col items-center justify-center bg-transparent py-0 px-7">
                 {/* Button to trigger the dialog */}
-                <button onClick={openUploader} className="btn-new">New</button>
+                <Button onClick={openUploader} className="btn-new">New</Button>
             </Container>
 
             <FadeIn className="w-full">
