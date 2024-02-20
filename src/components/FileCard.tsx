@@ -1,30 +1,36 @@
-import { Fragment } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-import { EllipsisHorizontalIcon } from '@heroicons/react/20/solid'
+import {Fragment} from 'react'
+import {Menu, Transition} from '@headlessui/react'
+import {EllipsisHorizontalIcon} from '@heroicons/react/20/solid'
+import Image, {StaticImageData} from 'next/image'
+import imagePdf from '@/images/files/9055322_bxs_file_pdf_icon.png'
+import imageDoc from '@/images/files/8541993_file_word_icon.png'
+import imageTxt from '@/images/files/211656_text_document_icon.png'
+
 
 const statuses = {
-	Paid: 'text-green-700 bg-green-50 ring-green-600/20',
-	Withdraw: 'text-gray-600 bg-gray-50 ring-gray-500/10',
-	Overdue: 'text-red-700 bg-red-50 ring-red-600/10',
+	SENT: 'text-blue-700 bg-blue-50 ring-blue-600/20',
+	SIGNED: 'text-green-700 bg-green-50 ring-green-600/20',
+	SIGN_PENDING: 'text-yellow-700 bg-yellow-50 ring-yellow-600/20',
 }
-const clients = [
+const clients: {id: number, name: string, imageUrl: string | StaticImageData, createdDate: string, status: 'SENT' | 'SIGNED' | 'SIGN_PENDING'}[] = [
 	{
 		id: 1,
-		name: 'Tuple',
-		imageUrl: 'https://tailwindui.com/img/logos/48x48/tuple.svg',
-		lastInvoice: { date: 'December 13, 2022', dateTime: '2022-12-13', amount: '$2,000.00', status: 'Overdue' },
+		name: 'myDocument.txt',
+		imageUrl: imageTxt,
+		createdDate: '2023-01-22', status: 'SIGN_PENDING',
 	},
 	{
 		id: 2,
-		name: 'SavvyCal',
-		imageUrl: 'https://tailwindui.com/img/logos/48x48/savvycal.svg',
-		lastInvoice: { date: 'January 22, 2023', dateTime: '2023-01-22', amount: '$14,000.00', status: 'Paid' },
+		name: 'contract.pdf',
+		imageUrl: imagePdf,
+		createdDate: '2023-01-22', status: 'SIGNED'
 	},
 	{
 		id: 3,
-		name: 'Reform',
-		imageUrl: 'https://tailwindui.com/img/logos/48x48/reform.svg',
-		lastInvoice: { date: 'January 23, 2023', dateTime: '2023-01-23', amount: '$7,600.00', status: 'Paid' },
+		name: 'invoice.docx',
+		imageUrl: imageDoc,
+		createdDate: '2023-01-22',
+		status: 'SENT'
 	},
 ]
 
@@ -38,10 +44,12 @@ export default function FileCard() {
 			{clients.map((client) => (
 				<li key={client.id} className="overflow-hidden rounded-xl border border-gray-200">
 					<div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-						<img
+						<Image
 							src={client.imageUrl}
 							alt={client.name}
-							className="h-12 w-12 flex-none rounded-lg bg-white object-cover ring-1 ring-gray-900/10"
+							width={48}
+							height={48}
+							className="rounded-lg"
 						/>
 						<div className="text-sm font-medium leading-6 text-gray-900">{client.name}</div>
 						<Menu as="div" className="relative ml-auto">
@@ -91,22 +99,20 @@ export default function FileCard() {
 					</div>
 					<dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
 						<div className="flex justify-between gap-x-4 py-3">
-							<dt className="text-gray-500">Last invoice</dt>
+							<dt className="text-gray-500">Created Date</dt>
 							<dd className="text-gray-700">
-								<time dateTime={client.lastInvoice.dateTime}>{client.lastInvoice.date}</time>
+								<time dateTime={client.createdDate}>{client.createdDate}</time>
 							</dd>
 						</div>
 						<div className="flex justify-between gap-x-4 py-3">
-							<dt className="text-gray-500">Amount</dt>
 							<dd className="flex items-start gap-x-2">
-								<div className="font-medium text-gray-900">{client.lastInvoice.amount}</div>
 								<div
 									className={classNames(
-										statuses[client.lastInvoice.status],
+										statuses[client.status],
 										'rounded-md py-1 px-2 text-xs font-medium ring-1 ring-inset'
 									)}
 								>
-									{client.lastInvoice.status}
+									{client.status}
 								</div>
 							</dd>
 						</div>
