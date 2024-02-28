@@ -19,6 +19,8 @@ export default function UploadPage() {
     const [sortOrder, setSortOrder] = useState('latest');
     const [statusFilter, setStatusFilter] = useState('');
 
+    const [dateRange, setDateRange] = useState<{startDate: string | undefined, endDate: string | undefined}>({startDate: undefined, endDate: undefined});
+
     const files: File[] = [
         {
             id: 1,
@@ -57,6 +59,11 @@ export default function UploadPage() {
         // Implement sorting logic here or wherever you're managing the list of files
     };
 
+
+    const handleDateRangeChange = (startDate, endDate) => {
+        setDateRange({startDate, endDate})
+    };
+
     const handleStatusFilterChange = (value) => {
         setStatusFilter(value);
         // Implement status filtering logic here or wherever you're managing the list of files
@@ -66,7 +73,8 @@ export default function UploadPage() {
     const filteredAndSortedFiles = files
         .filter((file) => file.name.toLowerCase().includes(searchTerm.toLowerCase()))
         .filter((file) => !statusFilter || file.status === statusFilter)
-        // Implement date range filtering here if needed
+        .filter((file) => (!dateRange.startDate || new Date(file.createdDate) >= new Date(dateRange.startDate))
+            && (!dateRange.endDate || new Date(file.createdDate) <= new Date(dateRange.endDate)))
         .sort((a, b) => {
             if (sortOrder === 'latest') {
                 return new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime();
@@ -81,14 +89,24 @@ export default function UploadPage() {
 
     return (
         <>
+            <Container>
+                <button
+                    onClick={openUploader} // Ensure you define the `openUploader` function in your component
+                    className="px-4 py-2 bg-black text-white font-semibold rounded-full hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50"
+                >
+                    New
+                </button>
+            </Container>
             <FadeIn className="w-full">
-                <SearchFilters
-                    onSearchChange={handleSearchChange}
-                    onSortChange={handleSortChange}
-                    onStatusFilterChange={handleStatusFilterChange} onDateRangeChange={undefined}                // Pass the date range change handler if implemented
-                    // onDateRangeChange={handleDateRangeChange}
-                />
-                </FadeIn>
+                <Container className="mt-8 sm:mt-10 lg:mt-12">
+                    <SearchFilters
+                        onSearchChange={handleSearchChange}
+                        onSortChange={handleSortChange}
+                        onStatusFilterChange={handleStatusFilterChange}
+                        onDateRangeChange={handleDateRangeChange}
+                    />
+                </Container>
+            </FadeIn>
 
 
             <FadeIn className="w-full">
