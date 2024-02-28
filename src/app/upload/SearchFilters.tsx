@@ -3,24 +3,29 @@ import { Container } from '@/components/Container';
 import { Disclosure } from '@headlessui/react';
 import { ChevronDownIcon, FunnelIcon } from '@heroicons/react/20/solid';
 
-export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChange }) {
+export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChange, onDateRangeChange }) {
 	const [filtersApplied, setFiltersApplied] = useState(0);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [sortOrder, setSortOrder] = useState('latest');
 	const [statusFilter, setStatusFilter] = useState('');
+	const [startDate, setStartDate] = useState('');
+	const [endDate, setEndDate] = useState('');
 
 	useEffect(() => {
-		const count = [searchTerm, sortOrder !== 'latest', statusFilter].filter(Boolean).length;
+		const count = [searchTerm, sortOrder !== 'latest', statusFilter, startDate, endDate].filter(Boolean).length;
 		setFiltersApplied(count);
-	}, [searchTerm, sortOrder, statusFilter]);
+	}, [searchTerm, sortOrder, statusFilter, startDate, endDate]);
 
 	const handleClearAll = () => {
 		setSearchTerm('');
 		setSortOrder('latest');
 		setStatusFilter('');
+		setStartDate('');
+		setEndDate('');
 		onSearchChange('');
 		onSortChange('latest');
 		onStatusFilterChange('');
+		onDateRangeChange('', '');
 	};
 
 	return (
@@ -52,7 +57,7 @@ export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChan
 					</div>
 					<Disclosure.Panel className="px-4 pt-4 pb-2 text-sm text-gray-500">
 						<Container className="flex flex-col items-center justify-center bg-transparent">
-							<div className="flex space-x-4 mb-4">
+							<div className="flex flex-wrap gap-4 mb-4">
 								<input
 									type="text"
 									placeholder="Search..."
@@ -76,7 +81,26 @@ export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChan
 									<option value="SIGNED">SIGNED</option>
 									<option value="SIGN_PENDING">SIGN_PENDING</option>
 								</select>
-								{/* Date range filter input could be implemented here */}
+								<input
+									type="date"
+									value={startDate}
+									onChange={(e) => {
+										setStartDate(e.target.value);
+										onDateRangeChange(e.target.value, endDate);
+									}}
+									className="form-input px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+									placeholder="Start Date"
+								/>
+								<input
+									type="date"
+									value={endDate}
+									onChange={(e) => {
+										setEndDate(e.target.value);
+										onDateRangeChange(startDate, e.target.value);
+									}}
+									className="form-input px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+									placeholder="End Date"
+								/>
 							</div>
 						</Container>
 					</Disclosure.Panel>
