@@ -10,7 +10,7 @@ import {Button} from '@/components/Button';
 import imageTxt from '@/images/files/211656_text_document_icon.png';
 import imagePdf from '@/images/files/9055322_bxs_file_pdf_icon.png';
 import imageDoc from '@/images/files/8541993_file_word_icon.png';
-import {Client} from '@/types';
+import {File} from '@/types';
 
 export default function UploadPage() {
     const [isUploaderOpen, setIsUploaderOpen] = useState(false);
@@ -19,18 +19,20 @@ export default function UploadPage() {
     const [cardItems, setCardItems] = useState([]); // Assuming cardItems is an array of objects
 
 
-    const clients: Client[] = [
+    const files: File[] = [
         {
             id: 1,
             name: 'myDocument.txt',
             imageUrl: imageTxt,
-            createdDate: '2023-01-22', status: 'SIGN_PENDING',
+            createdDate: '2023-01-22',
+            status: 'SIGN_PENDING',
         },
         {
             id: 2,
             name: 'contract.pdf',
             imageUrl: imagePdf,
-            createdDate: '2023-01-22', status: 'SIGNED'
+            createdDate: '2023-01-22',
+            status: 'SIGNED'
         },
         {
             id: 3,
@@ -50,16 +52,17 @@ export default function UploadPage() {
         setSortKey(event.target.value);
     };
 
-    const filteredAndSortedCardItems = clients
+    const filteredAndSortedCardItems = files
         .filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
-        .sort((a, b) => {
+        .sort((a: File, b: File) => {
             if (sortKey === 'name') {
                 return a.name.localeCompare(b.name);
             } else if (sortKey === 'createdDate') {
-                return new Date(a.createdDate) - new Date(b.createdDate);
+                return new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime();
             } else if (sortKey === 'status') {
                 return a.status.localeCompare(b.status);
             }
+            return 0;
         });
 
 

@@ -2,7 +2,7 @@ import {Fragment} from 'react'
 import {Menu, Transition} from '@headlessui/react'
 import {EllipsisHorizontalIcon} from '@heroicons/react/20/solid'
 import Image from 'next/image'
-import {Client} from '@/types';
+import {File} from '@/types';
 
 
 const statuses = {
@@ -15,7 +15,7 @@ function classNames(...classes: any[]) {
 	return classes.filter(Boolean).join(' ')
 }
 
-export default function FileCard({ client }: { client: Client }) {
+export default function FileCard({ client }: { client: File }) {
 	return (
 		<>
 			<div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
