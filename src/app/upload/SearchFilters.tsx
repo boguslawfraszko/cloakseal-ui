@@ -12,6 +12,11 @@ export interface SearchFiltersProps {
 	onDateRangeChange: (startDate: string, endDate: string) => void;
 }
 
+export enum SortOrder {
+	Latest = 'latest',
+	Oldest = 'oldest'
+}
+
 export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChange, onDateRangeChange }: SearchFiltersProps) {
 	const [filtersApplied, setFiltersApplied] = useState(0);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -181,16 +186,33 @@ export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChan
 										<Menu.Items
 											className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
 											<div className="py-1">
-												<Menu.Item key="Newest">
+												<Menu.Item key="Latest">
 													{({active}) => (
 														<a
-															href="Newest"
-															onChange={(e) => {
-																setSortOrder(e.target.value);
-																onSortChange(e.target.value);
+															href="Latest"
+															onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+																e.preventDefault();
+																setSortOrder(SortOrder.Latest);
+																onSortChange(SortOrder.Latest);
 															}}
 														>
-															Newest
+															Latest
+														</a>
+													)}
+												</Menu.Item>
+											</div>
+											<div className="py-1">
+												<Menu.Item key="Oldest">
+													{({active}) => (
+														<a
+															href="Oldest"
+															onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+																e.preventDefault();
+																setSortOrder(SortOrder.Oldest);
+																onSortChange(SortOrder.Oldest);
+															}}
+														>
+															Oldest
 														</a>
 													)}
 												</Menu.Item>

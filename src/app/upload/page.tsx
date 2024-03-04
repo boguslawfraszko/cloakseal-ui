@@ -10,7 +10,7 @@ import imageTxt from '@/images/files/211656_text_document_icon.png';
 import imagePdf from '@/images/files/9055322_bxs_file_pdf_icon.png';
 import imageDoc from '@/images/files/8541993_file_word_icon.png';
 import {File} from '@/types';
-import {SearchFilters, SearchFiltersProps} from '@/app/upload/SearchFilters';
+import {SearchFilters, SearchFiltersProps, SortOrder} from '@/app/upload/SearchFilters';
 
 export default function UploadPage() {
     const [isUploaderOpen, setIsUploaderOpen] = useState(false);
@@ -72,9 +72,9 @@ export default function UploadPage() {
         .filter((file) => (!dateRange.startDate || new Date(file.createdDate) >= new Date(dateRange.startDate))
             && (!dateRange.endDate || new Date(file.createdDate) <= new Date(dateRange.endDate)))
         .sort((a, b) => {
-            if (sortOrder === 'latest') {
+            if (sortOrder === SortOrder.Latest) {
                 return new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime();
-            } else if (sortOrder === 'oldest') {
+            } else if (sortOrder === SortOrder.Oldest) {
                 return new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime();
             }
             return 0;
