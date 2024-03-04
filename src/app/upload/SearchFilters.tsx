@@ -1,12 +1,18 @@
 'use client'
 
 
-import React, {useState, useEffect, Fragment} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import {Disclosure, Menu, Transition} from '@headlessui/react';
-import { ChevronDownIcon, FunnelIcon } from '@heroicons/react/20/solid';
-import {Container} from '@/components/Container';
+import {ChevronDownIcon, FunnelIcon} from '@heroicons/react/20/solid';
 
-export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChange, onDateRangeChange }) {
+export interface SearchFiltersProps {
+	onSearchChange: (searchTerm: string) => void;
+	onSortChange: (sortOption: string) => void;
+	onStatusFilterChange: (status: string) => void;
+	onDateRangeChange: (startDate: string, endDate: string) => void;
+}
+
+export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChange, onDateRangeChange }: SearchFiltersProps) {
 	const [filtersApplied, setFiltersApplied] = useState(0);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [sortOrder, setSortOrder] = useState('latest');

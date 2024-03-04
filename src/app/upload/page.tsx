@@ -10,7 +10,7 @@ import imageTxt from '@/images/files/211656_text_document_icon.png';
 import imagePdf from '@/images/files/9055322_bxs_file_pdf_icon.png';
 import imageDoc from '@/images/files/8541993_file_word_icon.png';
 import {File} from '@/types';
-import {SearchFilters} from '@/app/upload/SearchFilters';
+import {SearchFilters, SearchFiltersProps} from '@/app/upload/SearchFilters';
 
 export default function UploadPage() {
     const [isUploaderOpen, setIsUploaderOpen] = useState(false);
@@ -49,24 +49,20 @@ export default function UploadPage() {
     const closeUploader = () => setIsUploaderOpen(false);
 
 
-    const handleSearchChange = (value) => {
+    const handleSearchChange: SearchFiltersProps['onSearchChange'] = (value) => {
         setSearchTerm(value);
-        // You can also directly call the function to filter the files here if you want real-time search
     };
 
-    const handleSortChange = (value) => {
+    const handleSortChange: SearchFiltersProps['onSortChange'] = (value) => {
         setSortOrder(value);
-        // Implement sorting logic here or wherever you're managing the list of files
     };
 
-
-    const handleDateRangeChange = (startDate, endDate) => {
+    const handleDateRangeChange: SearchFiltersProps['onDateRangeChange'] = (startDate, endDate) => {
         setDateRange({startDate, endDate})
     };
 
-    const handleStatusFilterChange = (value) => {
+    const handleStatusFilterChange: SearchFiltersProps['onStatusFilterChange'] = (value) => {
         setStatusFilter(value);
-        // Implement status filtering logic here or wherever you're managing the list of files
     };
 
 
