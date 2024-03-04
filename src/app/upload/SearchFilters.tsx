@@ -1,8 +1,8 @@
 'use client'
 
 
-import React, { useState, useEffect } from 'react';
-import { Disclosure } from '@headlessui/react';
+import React, {useState, useEffect, Fragment} from 'react';
+import {Disclosure, Menu, Transition} from '@headlessui/react';
 import { ChevronDownIcon, FunnelIcon } from '@heroicons/react/20/solid';
 import {Container} from '@/components/Container';
 
@@ -32,7 +32,6 @@ export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChan
 	};
 
 	return (
-		<Container className="mt-8 sm:mt-10 lg:mt-12">
 			<Disclosure
 				as="section"
 				aria-labelledby="filter-heading"
@@ -63,7 +62,7 @@ export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChan
 						</div>
 						<Disclosure.Panel className="border-t border-gray-200 py-10">
 							<div
-								className="mx-auto grid max-w-7xl grid-cols-1 gap-x-4 px-4 text-sm sm:px-6 md:gap-x-6 lg:px-8" >
+								className="mx-auto grid max-w-7xl grid-cols-1 gap-x-4 px-4 text-sm sm:px-6 md:gap-x-6 lg:px-8">
 								<div className="grid auto-rows-min grid-cols-4 gap-y-10 md:grid-cols-4 md:gap-x-6">
 									<fieldset>
 										<legend className="block font-medium">Name contains</legend>
@@ -100,9 +99,10 @@ export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChan
 									</fieldset>
 
 									<fieldset>
-										<legend className="block font-medium">Created </legend>
+										<legend className="block font-medium">Created</legend>
 										<div className="space-y-6 pt-6 sm:space-y-4 sm:pt-4">
-											<label htmlFor="startDate" className="block text-sm font-medium text-gray-700">from:</label>
+											<label htmlFor="startDate"
+											       className="block text-sm font-medium text-gray-700">from:</label>
 											<input
 												type="date"
 												value={startDate}
@@ -113,7 +113,8 @@ export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChan
 												className="form-input px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
 												placeholder="Start Date"
 											/>
-											<label htmlFor="startDate" className="block text-sm font-medium text-gray-700">to:</label>
+											<label htmlFor="startDate"
+											       className="block text-sm font-medium text-gray-700">to:</label>
 											<input
 												type="date"
 												value={endDate}
@@ -130,11 +131,57 @@ export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChan
 
 								</div>
 							</div>
+
 						</Disclosure.Panel>
+						<div className="col-start-1 row-start-1 py-4">
+							<div className="mx-auto flex max-w-7xl justify-end px-4 sm:px-6 lg:px-8">
+								<Menu as="div" className="relative inline-block">
+									<div className="flex">
+										<Menu.Button
+											className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+											Sort
+											<ChevronDownIcon
+												className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+												aria-hidden="true"
+											/>
+										</Menu.Button>
+									</div>
+
+									<Transition
+										as={Fragment}
+										enter="transition ease-out duration-100"
+										enterFrom="transform opacity-0 scale-95"
+										enterTo="transform opacity-100 scale-100"
+										leave="transition ease-in duration-75"
+										leaveFrom="transform opacity-100 scale-100"
+										leaveTo="transform opacity-0 scale-95"
+									>
+										<Menu.Items
+											className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+											<div className="py-1">
+												<Menu.Item key="Newest">
+													{({active}) => (
+														<a
+															href="Newest"
+															onChange={(e) => {
+																setSortOrder(e.target.value);
+																onSortChange(e.target.value);
+															}}
+														>
+															Newest
+														</a>
+													)}
+												</Menu.Item>
+											</div>
+										</Menu.Items>
+									</Transition>
+								</Menu>
+							</div>
+						</div>
+
 					</>
 				)}
 			</Disclosure>
-		</Container>
 	);
 }
 
