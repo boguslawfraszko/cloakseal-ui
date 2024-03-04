@@ -85,14 +85,18 @@ export default function UploadPage() {
 
     return (
         <>
-            <Container>
-                <button
-                    onClick={openUploader} // Ensure you define the `openUploader` function in your component
-                    className="px-4 py-2 bg-black text-white font-semibold rounded-full hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50"
-                >
-                    New
-                </button>
-            </Container>
+            <FadeIn className="w-full">
+                <Container className="mt-8 sm:mt-10 lg:mt-12">
+                    <div className="flex justify-end w-full">
+                        <button
+                            onClick={openUploader}
+                            className="px-4 py-2 bg-black text-white font-semibold rounded-full hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50"
+                        >
+                            New
+                        </button>
+                    </div>
+                </Container>
+            </FadeIn>
             <FadeIn className="w-full">
                 <Container className="mt-8 sm:mt-10 lg:mt-12">
                     <SearchFilters
