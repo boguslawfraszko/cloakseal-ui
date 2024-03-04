@@ -26,7 +26,7 @@ export default function UploadPage() {
             id: 1,
             name: 'myDocument.txt',
             imageUrl: imageTxt,
-            createdDate: '2023-01-22',
+            createdDate: '2023-02-22',
             status: 'SIGN_PENDING',
         },
         {
@@ -40,7 +40,7 @@ export default function UploadPage() {
             id: 3,
             name: 'invoice.docx',
             imageUrl: imageDoc,
-            createdDate: '2023-01-22',
+            createdDate: '2023-01-21',
             status: 'SENT'
         },
     ]

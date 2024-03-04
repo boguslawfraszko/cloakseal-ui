@@ -49,6 +49,16 @@ export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChan
 		{ value: "SIGN_PENDING", label: "SIGN PENDING" }
 	];
 
+	const sortOptions = [
+		{ name: "Latest", value: SortOrder.Latest, current: sortOrder === SortOrder.Latest },
+		{ name: "Oldest", value: SortOrder.Oldest, current: sortOrder === SortOrder.Oldest },
+		// Add more sorting options as needed
+	];
+
+	function classNames(...classes: string[]) {
+		return classes.filter(Boolean).join(' ')
+	}
+
 
 	return (
 			<Disclosure
@@ -183,39 +193,29 @@ export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChan
 										leaveFrom="transform opacity-100 scale-100"
 										leaveTo="transform opacity-0 scale-95"
 									>
-										<Menu.Items
-											className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+										<Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
 											<div className="py-1">
-												<Menu.Item key="Latest">
-													{({active}) => (
-														<a
-															href="Latest"
-															onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-																e.preventDefault();
-																setSortOrder(SortOrder.Latest);
-																onSortChange(SortOrder.Latest);
-															}}
-														>
-															Latest
-														</a>
-													)}
-												</Menu.Item>
-											</div>
-											<div className="py-1">
-												<Menu.Item key="Oldest">
-													{({active}) => (
-														<a
-															href="Oldest"
-															onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-																e.preventDefault();
-																setSortOrder(SortOrder.Oldest);
-																onSortChange(SortOrder.Oldest);
-															}}
-														>
-															Oldest
-														</a>
-													)}
-												</Menu.Item>
+												{sortOptions.map((option) => (
+													<Menu.Item key={option.name}>
+														{({ active }) => (
+															<a
+																href={`#${option.name}`}
+																onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+																	e.preventDefault();
+																	setSortOrder(option.value);
+																	onSortChange(option.value);
+																}}
+																className={classNames(
+																	option.current ? 'font-medium text-gray-900' : 'text-gray-500',
+																	active ? 'bg-gray-100' : '',
+																	'block px-4 py-2 text-sm'
+																)}
+															>
+																{option.name}
+															</a>
+														)}
+													</Menu.Item>
+												))}
 											</div>
 										</Menu.Items>
 									</Transition>
@@ -228,19 +228,3 @@ export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChan
 			</Disclosure>
 	);
 }
-
-
-/**
- *
- * 							<select
- * 								value={sortOrder}
- * 								onChange={(e) => {
- * 									setSortOrder(e.target.value);
- * 									onSortChange(e.target.value);
- * 								}}
- * 								className="form-select px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
- * 							>
- * 								<option value="latest">Latest</option>
- * 								<option value="oldest">Oldest</option>
- * 							</select>
- */
