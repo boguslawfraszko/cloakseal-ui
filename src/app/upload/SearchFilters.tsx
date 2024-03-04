@@ -31,6 +31,14 @@ export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChan
 		onDateRangeChange('', '');
 	};
 
+	const statusOptions = [
+		{ value: "", label: "All Statuses" },
+		{ value: "SENT", label: "SENT" },
+		{ value: "SIGNED", label: "SIGNED" },
+		{ value: "SIGN_PENDING", label: "SIGN PENDING" }
+	];
+
+
 	return (
 			<Disclosure
 				as="section"
@@ -82,19 +90,27 @@ export function SearchFilters({ onSearchChange, onSortChange, onStatusFilterChan
 									<fieldset>
 										<legend className="block font-medium">Status</legend>
 										<div className="space-y-6 pt-6 sm:space-y-4 sm:pt-4">
-											<select
-												value={statusFilter}
-												onChange={(e) => {
-													setStatusFilter(e.target.value);
-													onStatusFilterChange(e.target.value);
-												}}
-												className="form-select px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-											>
-												<option value="">All Statuses</option>
-												<option value="SENT">SENT</option>
-												<option value="SIGNED">SIGNED</option>
-												<option value="SIGN_PENDING">SIGN_PENDING</option>
-											</select>
+											{statusOptions.map((option, optionIdx) => (
+												<div key={option.value}
+												     className="flex items-center text-base sm:text-sm">
+													<input
+														id={`status-${optionIdx}`}
+														name="status[]"
+														value={option.value}
+														type="radio"
+														className="h-4 w-4 flex-shrink-0 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+														checked={statusFilter === option.value}
+														onChange={(e) => {
+															setStatusFilter(e.target.value);
+															onStatusFilterChange(e.target.value);
+														}}
+													/>
+													<label htmlFor={`status-${optionIdx}`}
+													       className="ml-3 min-w-0 flex-1 text-gray-600">
+														{option.label}
+													</label>
+												</div>
+											))}
 										</div>
 									</fieldset>
 
