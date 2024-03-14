@@ -1,6 +1,6 @@
 'use client'
 
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Container} from '@/components/Container';
 import FileCard from '@/components/FileCard';
 import {FadeIn} from '@/components/FadeIn';
@@ -11,6 +11,9 @@ import imagePdf from '@/images/files/9055322_bxs_file_pdf_icon.png';
 import imageDoc from '@/images/files/8541993_file_word_icon.png';
 import {File} from '@/types';
 import {SearchFilters, SearchFiltersProps, SortOrder} from '@/app/upload/SearchFilters';
+import {fetchTransactionsForWallet} from '@/app/upload/FileReader';
+import {arweave} from '@/app/upload/config';
+import { subMonths } from 'date-fns';
 
 export default function UploadPage() {
     const [isUploaderOpen, setIsUploaderOpen] = useState(false);
@@ -44,6 +47,24 @@ export default function UploadPage() {
             status: 'SENT'
         },
     ]
+
+
+
+    const [walletAddress, setWalletAddress] = useState<string | null>(null);
+
+
+    useEffect(() => {
+        const connectWallet = async () => {
+            await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'DISPATCH', 'SIGN_TRANSACTION', 'ENCRYPT']);
+            const address = await arweave.wallets.getAddress('use_wallet');
+            setWalletAddress(address);
+            console.log('Loaded AR address:', address);
+        };
+
+        if (!walletAddress) {
+            connectWallet().catch(console.error);
+        }
+    }, [walletAddress]);
 
     const openUploader = () => setIsUploaderOpen(true);
     const closeUploader = () => setIsUploaderOpen(false);
@@ -82,9 +103,31 @@ export default function UploadPage() {
 
 
 
+    const readFiles = async () => {
+
+        let startDate = subMonths(new Date(), 5);
+        let endDate = new Date();
+        let appId = 'cloakseal';
+        let fileName = 'test.txt';
+        fetchTransactionsForWallet(walletAddress, startDate, endDate, appId, fileName).then((transactions) => {
+            console.log('Transactions:', transactions);
+        })
+    }
 
     return (
         <>
+            <FadeIn className="w-full">
+                <Container className="mt-8 sm:mt-10 lg:mt-12">
+                    <div className="flex justify-end w-full">
+                        <button
+                            onClick={readFiles}
+                            className="px-4 py-2 bg-black text-white font-semibold rounded-full hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50"
+                        >
+                            Read
+                        </button>
+                    </div>
+                </Container>
+            </FadeIn>
             <FadeIn className="w-full">
                 <Container className="mt-8 sm:mt-10 lg:mt-12">
                     <div className="flex justify-end w-full">
@@ -127,7 +170,7 @@ export default function UploadPage() {
             </FadeIn>
 
             <Dialog isOpen={isUploaderOpen} onClose={closeUploader}>
-                <FileUploader />
+                <FileUploader walletAddress={walletAddress} />
             </Dialog>
         </>
     );

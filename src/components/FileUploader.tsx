@@ -1,27 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import Arweave from 'arweave';
+import React, {useState} from 'react';
+import {arweave} from '@/app/upload/config';
 
-export const FileUploader: React.FC = () => {
+export function FileUploader({walletAddress}: {walletAddress: string | null}) {
 	const [file, setFile] = useState<File | null>(null);
-	const [walletAddress, setWalletAddress] = useState<string | null>(null);
-	const arweave = new Arweave({
-		host: 'ar-io.net',
-		port: 443,
-		protocol: 'https',
-	});
-
-	useEffect(() => {
-		const connectWallet = async () => {
-			await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'DISPATCH', 'SIGN_TRANSACTION', 'ENCRYPT']);
-			const address = await arweave.wallets.getAddress('use_wallet');
-			setWalletAddress(address);
-			console.log('Loaded AR address:', address);
-		};
-
-		if (!walletAddress) {
-			connectWallet().catch(console.error);
-		}
-	}, [walletAddress]);
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const selectedFile = event.target.files?.[0] ?? null;
@@ -42,6 +23,14 @@ export const FileUploader: React.FC = () => {
 					const transaction = await arweave.createTransaction({
 						data: arrayBuffer,
 					});
+					const contentType = file.type || 'application/octet-stream'; // Default to 'application/octet-stream' if the type is not detected
+					const createdDate = new Date().toISOString();
+
+					transaction.addTag('Content-Type', contentType);
+					transaction.addTag('App-Id', 'cloakseal');
+					transaction.addTag('File-Name', file.name);
+
+
 					await arweave.transactions.sign(transaction);
 					const response = await arweave.transactions.post(transaction);
 
