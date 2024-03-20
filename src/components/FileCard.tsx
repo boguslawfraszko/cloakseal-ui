@@ -11,6 +11,19 @@ const statuses = {
 	SIGN_PENDING: 'text-yellow-700 bg-yellow-50 ring-yellow-600/20',
 }
 
+import imageTxt from '@/images/files/211656_text_document_icon.png';
+import imagePdf from '@/images/files/9055322_bxs_file_pdf_icon.png';
+import imageDoc from '@/images/files/8541993_file_word_icon.png';
+
+
+const fileTypesIcons = new Map([
+	['text/plain', imageTxt.src],
+	['pdf', imagePdf.src],
+	['docx', imageDoc.src],
+	['image/jpeg', imageTxt.src]
+])
+
+
 function classNames(...classes: any[]) {
 	return classes.filter(Boolean).join(' ')
 }
@@ -20,7 +33,7 @@ export default function FileCard({ client }: { client: File }) {
 		<>
 			<div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
 				<Image
-					src={client.imageUrl}
+					src={fileTypesIcons.get(client.fileType)}
 					alt={client.name}
 					width={48}
 					height={48}

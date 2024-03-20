@@ -1,20 +1,10 @@
-import {Query} from '@irys/query'; // Assuming direct browser compatibility or a browser-friendly version
+import {Query} from '@irys/query';
+import {File} from '@/types';
 
-interface TransactionNode {
-	id: string;
-	fileName: string;
-	createdDate: Date;
-	contentType: string;
-}
-
-// Define the function parameters with types
 export async function fetchTransactionsForWallet(
 	walletAddress: string | null,
-	startDate: Date,
-	endDate: Date,
-	appId: string | null,
-	fileNamePart: string | null
-): Promise<TransactionNode[] | null> {
+	appId: string | null
+): Promise<File[] | null> {
 	if (!walletAddress) {
 		console.error('Wallet address is not available.');
 		return null;
@@ -28,18 +18,13 @@ export async function fetchTransactionsForWallet(
 				{ name: "App-Id", values: [appId || ''] },
 			]);
 
-		let filesFiltered = files
-			.filter(files => files.tags.find(tag => tag.name === 'File-Name' && tag.value.includes(fileNamePart || '')))
-			.filter(files => new Date(files.block.timestamp * 1000) >= startDate)
-			.filter(files => new Date(files.block.timestamp * 1000) <= endDate)
-	    console.log(files, filesFiltered)
-
-		return filesFiltered.map( file => {
+		return files.map( file => {
 			return {
 				id: file.id,
-				fileName: file.tags.find(tag => tag.name === 'File-Name')?.value || '',
-				createdDate: new Date(file.block.timestamp * 1000),
-				contentType: file.tags.find(tag => tag.name === 'Content-Type')?.value || '',
+				name: file.tags.find(tag => tag.name === 'File-Name')?.value || '',
+				createdDate: new Date(file.block.timestamp * 1000).toISOString(),
+				fileType: file.tags.find(tag => tag.name === 'Content-Type')?.value || '',
+				status: 'SENT',
 			}
 		})
 

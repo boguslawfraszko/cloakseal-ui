@@ -1,9 +1,10 @@
 import {StaticImageData} from 'next/image';
 
 export interface File {
-	id: number;
+	id: string;
 	name: string;
-	imageUrl: string | StaticImageData;
+	fileType: string;
 	createdDate: string;
 	status: 'SENT' | 'SIGNED' | 'SIGN_PENDING';
 }
+
