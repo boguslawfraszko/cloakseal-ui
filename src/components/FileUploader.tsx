@@ -1,8 +1,10 @@
 import React, {useState} from 'react';
 import {arweave} from '@/app/upload/config';
 
-export function FileUploader({walletAddress}: {walletAddress: string | null}) {
+export function FileUploader({walletAddress, onUploadSuccess }: {walletAddress: string | null, onUploadSuccess: () => void}) {
 	const [file, setFile] = useState<File | null>(null);
+	const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+	const [errorMessage, setErrorMessage] = useState<string>('');
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const selectedFile = event.target.files?.[0] ?? null;
@@ -14,6 +16,7 @@ export function FileUploader({walletAddress}: {walletAddress: string | null}) {
 
 	const uploadFile = async () => {
 		if (!file || !walletAddress) return;
+		setUploadStatus('uploading');
 
 		try {
 			const reader = new FileReader();
@@ -23,12 +26,14 @@ export function FileUploader({walletAddress}: {walletAddress: string | null}) {
 					const transaction = await arweave.createTransaction({
 						data: arrayBuffer,
 					});
-					const contentType = file.type || 'application/octet-stream'; // Default to 'application/octet-stream' if the type is not detected
+					const contentType = file.type || 'application/octet-stream';
 					const createdDate = new Date().toISOString();
 
 					transaction.addTag('Content-Type', contentType);
 					transaction.addTag('App-Id', 'cloakseal');
 					transaction.addTag('File-Name', file.name);
+
+					transaction.addTag('Created-Date', createdDate);
 
 
 					await arweave.transactions.sign(transaction);
@@ -36,19 +41,30 @@ export function FileUploader({walletAddress}: {walletAddress: string | null}) {
 
 					if (response.status === 200) {
 						console.log('File uploaded successfully!', response);
+						onUploadSuccess();
+						setUploadStatus('success');
 					} else {
 						console.error('File upload failed:', response.statusText);
+						setUploadStatus('error');
+						setErrorMessage(`Upload failed: ${response.statusText}`);
 					}
 				}
 			};
 			reader.readAsArrayBuffer(file);
 		} catch (error) {
 			console.error('Error uploading file:', error);
+			setUploadStatus('error');
+			setErrorMessage(`Error uploading file: ${error instanceof Error ? error.message : String(error)}`);
 		}
 	};
 
 	return (
-		<div className="flex items-center justify-center bg-gray-100">
+		<div className="flex flex-col items-center justify-center bg-gray-100">
+			{uploadStatus === 'error' && errorMessage && (
+				<div className="text-red-500 text-sm mb-4 text-center">
+					{errorMessage}
+				</div>
+			)}
 			<div className="max-w-lg w-full space-y-8 p-10 bg-white shadow rounded-xl">
 				<div className="text-center">
 					<svg

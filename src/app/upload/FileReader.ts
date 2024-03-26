@@ -17,12 +17,14 @@ export async function fetchTransactionsForWallet(
 			.tags([
 				{ name: "App-Id", values: [appId || ''] },
 			]);
+		console.log(files);
 
 		return files.map( file => {
 			return {
 				id: file.id,
 				name: file.tags.find(tag => tag.name === 'File-Name')?.value || '',
-				createdDate: new Date(file.block.timestamp * 1000).toISOString(),
+				createdDate: file.tags.find(tag => tag.name === 'Created-Date')?.value || '',
+				//createdDate: new Date(file.block.timestamp * 1000).toISOString() || '',
 				fileType: file.tags.find(tag => tag.name === 'Content-Type')?.value || '',
 				status: 'SENT',
 			}

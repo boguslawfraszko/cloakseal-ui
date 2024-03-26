@@ -18,7 +18,7 @@ import imageDoc from '@/images/files/8541993_file_word_icon.png';
 
 const fileTypesIcons = new Map([
 	['text/plain', imageTxt.src],
-	['pdf', imagePdf.src],
+	['application/pdf', imagePdf.src],
 	['docx', imageDoc.src],
 	['image/jpeg', imageTxt.src]
 ])
@@ -33,7 +33,7 @@ export default function FileCard({ client }: { client: File }) {
 		<>
 			<div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
 				<Image
-					src={fileTypesIcons.get(client.fileType)}
+					src={fileTypesIcons.get(client.fileType) || imageTxt.src}
 					alt={client.name}
 					width={48}
 					height={48}

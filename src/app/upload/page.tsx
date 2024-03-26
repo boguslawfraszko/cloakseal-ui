@@ -132,7 +132,7 @@ export default function UploadPage() {
             </FadeIn>
 
             <Dialog isOpen={isUploaderOpen} onClose={closeUploader}>
-                <FileUploader walletAddress={walletAddress} />
+                <FileUploader walletAddress={walletAddress} onUploadSuccess={closeUploader} />
             </Dialog>
         </>
     );
